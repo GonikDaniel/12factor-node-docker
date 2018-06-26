@@ -1,4 +1,5 @@
 # Users Environment Variables
+.env
 .lock-wscript
 .idea
 .tmp/
