@@ -12,10 +12,13 @@ const app = express();
 
 app.use('/images', proxyBaseImageUrl);
 
-app.listen('8080');
-
-const MongoClient = require('mongodb').MongoClient;
-
-MongoClient.connect(process.env.MONGO_URI, (err, db) => {
-  console.log(err ? `Cannot connect to MongoDB, ${err}` : 'Connected to MongoDB');
+app.get('/', function (req, res) {
+  res.send('<h1>can i haz hug</h1><img src="images/herman.jpg" />')
 })
+
+app.listen(8080, () => {
+  console.log('Web server running on port 8080');
+  require('mongodb').MongoClient.connect(process.env.MONGO_URI, (err, db) => {
+    console.log(err ? `Cannot connect to MongoDB, ${err}` : 'Connected to MongoDB');
+  })
+});
