@@ -10,6 +10,7 @@ const proxyBaseImageUrl = baseImageUrl
     })
   : express.static(path.join(__dirname, 'public/images'));
 const app = express();
+const PORT = process.env.PORT || '8080';
 
 app.use('/images', proxyBaseImageUrl);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -42,9 +43,9 @@ app.post('/upload', (req, res) => {
 });
 
 
-app.listen(process.env.PORT, () => {
-  console.log(`Web server running on port ${process.env.PORT}`);
-  // require('mongodb').MongoClient.connect(process.env.MONGO_URI, (err, db) => {
-  //   console.log(err ? `Cannot connect to MongoDB, ${err}` : 'Connected to MongoDB');
-  // });
+app.listen(PORT, () => {
+  console.log(`Web server running on port ${PORT}`);
+  require('mongodb').MongoClient.connect(process.env.MONGO_URI, (err, db) => {
+    console.log(err ? `Cannot connect to MongoDB, ${err}` : 'Connected to MongoDB');
+  });
 });
