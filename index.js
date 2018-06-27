@@ -2,6 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const proxy = require('express-http-proxy');
+const fileUpload = require('express-fileupload');
 const baseImageUrl = process.env.BASE_IMAGE_URL;
 const proxyBaseImageUrl = baseImageUrl
   ? proxy(baseImageUrl, {
@@ -9,16 +10,42 @@ const proxyBaseImageUrl = baseImageUrl
     })
   : express.static(path.join(__dirname, 'public/images'));
 const app = express();
+const PORT = process.env.PORT || '8080';
 
 app.use('/images', proxyBaseImageUrl);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(fileUpload());
 
-app.get('/', function (req, res) {
-  res.send('<h1>can i haz hug</h1><img src="images/herman.jpeg" />')
-})
+app.get('/', (req, res) => {
+  res.send(`
+    <h1>Super app</h1>
 
-app.listen(process.env.PORT, () => {
-  console.log(`Web server running on port ${process.env.PORT}`);
+    <form action="/upload" enctype="multipart/form-data" method="post">
+      <input type="file" name="foo" /><br /><br />
+      <input type="submit" value="Upload" />
+    </form>
+
+    <img src="images/herman.jpeg" />
+  `);
+});
+
+app.post('/upload', (req, res) => {
+  if (!req.files) return res.status(400).send('No files were uploaded!');
+
+  const { foo } = req.files;
+  const uploadTo = `uploads/${foo.name}`;
+
+  foo.mv(uploadTo, (err) => {
+    if (err) return res.status(500).send(err);
+
+    res.send(`File uploaded to <a href="${uploadTo}">${uploadTo}</a>`);
+  });
+});
+
+
+app.listen(PORT, () => {
+  console.log(`Web server running on port ${PORT}`);
   require('mongodb').MongoClient.connect(process.env.MONGO_URI, (err, db) => {
     console.log(err ? `Cannot connect to MongoDB, ${err}` : 'Connected to MongoDB');
-  })
+  });
 });
