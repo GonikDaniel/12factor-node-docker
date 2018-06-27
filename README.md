@@ -21,3 +21,8 @@ Build with nodejs (express), mongodb and docker
 ### Ensure Containers Run with High-Availability
 - use `restart: always` in your docker-compose
 - docker-compose up --scale app-nodejs=3
+
+### Easy way to play around with container and killl it after exit
+```
+  docker run -it --rm ubuntu bash
+```
